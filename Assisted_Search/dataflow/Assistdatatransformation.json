@@ -53,17 +53,30 @@
 				"!isNull({Category}) && {Category} != '' &&",
 				"!isNull({URL}) && {URL} != ''",
 				") ~> FilterEmptyRows",
-				"FilterEmptyRows aggregate(groupBy({Document ID}),",
+				"FilterEmptyRows aggregate(groupBy({Document ID},",
+				"          {Document Title},",
+				"          {Content Summary},",
+				"          Category,",
+				"          URL),",
 				"     RowCount = count({Document ID})) ~> DuplicateCounter",
 				"DuplicateCounter filter(RowCount > 1) ~> Deduplication",
 				"Deduplication sink(allowSchemaDrift: true,",
-				"     validateSchema: true,",
+				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> assistsink"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Document_ID = {Document ID},",
+				"          Document_Title = {Document Title},",
+				"          Content_Summary = {Content Summary},",
+				"          Category,",
+				"          URL,",
+				"          RowCount",
+				"     ),",
+				"     partitionBy('roundRobin', 2)) ~> assistsink"
 			]
 		}
 	}

@@ -18,7 +18,7 @@
 						"referenceName": "Parquet1",
 						"type": "DatasetReference"
 					},
-					"name": "AssistSink",
+					"name": "assistsink",
 					"rejectedDataLinkedService": {
 						"referenceName": "AzureDataLakeStorage1",
 						"type": "LinkedServiceReference"
@@ -63,7 +63,7 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> AssistSink"
+				"     skipDuplicateMapOutputs: true) ~> assistsink"
 			]
 		}
 	}

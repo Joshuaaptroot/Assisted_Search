@@ -1,0 +1,31 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Scrapeddata",
+						"type": "DatasetReference"
+					},
+					"name": "Scrapeddata"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          {Document ID} as string,",
+				"          {Document Title} as string,",
+				"          {Content Summary} as string,",
+				"          Category as string,",
+				"          URL as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Scrapeddata"
+			]
+		}
+	}
+}

@@ -13,7 +13,11 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "filter1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          {Document ID} as string,",
@@ -24,7 +28,13 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> Scrapeddata"
+				"     ignoreNoFilesFound: false) ~> Scrapeddata",
+				"Scrapeddata filter(!isNull(DocumentID) && DocumentID != '' &&",
+				"!isNull(DocumentTitle) && DocumentTitle != '' &&",
+				"!isNull(ContentSummary) && ContentSummary != '' &&",
+				"!isNull(Category) && Category != '' &&",
+				"!isNull(URL) && URL != ''",
+				") ~> filter1"
 			]
 		}
 	}

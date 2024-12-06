@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "exampleresults",
+				"fileName": "outputfile-@{pipeline().RunId}",
 				"fileSystem": "output-folder"
 			},
 			"compressionCodec": "snappy"

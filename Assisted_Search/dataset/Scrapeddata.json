@@ -1,0 +1,44 @@
+{
+	"name": "Scrapeddata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "StandinSource",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Dataset.csv",
+				"container": "assustedsearch"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Document ID",
+				"type": "String"
+			},
+			{
+				"name": "Document Title",
+				"type": "String"
+			},
+			{
+				"name": "Content Summary",
+				"type": "String"
+			},
+			{
+				"name": "Category",
+				"type": "String"
+			},
+			{
+				"name": "URL",
+				"type": "String"
+			}
+		]
+	}
+}

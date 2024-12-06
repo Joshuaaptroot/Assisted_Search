@@ -11,7 +11,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "outputfile",
+					"value": "output@{pipeline().RunId}",
 					"type": "Expression"
 				},
 				"fileSystem": "output-folder"

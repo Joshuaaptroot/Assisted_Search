@@ -12,10 +12,28 @@
 					"name": "Scrapeddata"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Parquet1",
+						"type": "DatasetReference"
+					},
+					"name": "AssistSink",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
 			"transformations": [
 				{
-					"name": "filter1"
+					"name": "FilterEmptyRows"
+				},
+				{
+					"name": "DuplicateCounter"
+				},
+				{
+					"name": "Deduplication"
 				}
 			],
 			"scriptLines": [
@@ -29,12 +47,23 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> Scrapeddata",
-				"Scrapeddata filter(!isNull(DocumentID) && DocumentID != '' &&",
-				"!isNull(DocumentTitle) && DocumentTitle != '' &&",
-				"!isNull(ContentSummary) && ContentSummary != '' &&",
-				"!isNull(Category) && Category != '' &&",
-				"!isNull(URL) && URL != ''",
-				") ~> filter1"
+				"Scrapeddata filter(!isNull({Document ID}) && {Document ID} != '' &&",
+				"!isNull({Document Title}) && {Document Title} != '' &&",
+				"!isNull({Content Summary}) && {Content Summary} != '' &&",
+				"!isNull({Category}) && {Category} != '' &&",
+				"!isNull({URL}) && {URL} != ''",
+				") ~> FilterEmptyRows",
+				"FilterEmptyRows aggregate(groupBy({Document ID}),",
+				"     RowCount = count({Document ID})) ~> DuplicateCounter",
+				"DuplicateCounter filter(RowCount > 1) ~> Deduplication",
+				"Deduplication sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> AssistSink"
 			]
 		}
 	}

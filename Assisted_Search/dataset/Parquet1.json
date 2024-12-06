@@ -14,7 +14,7 @@
 					"value": "output@{pipeline().RunId}",
 					"type": "Expression"
 				},
-				"fileSystem": "output-folder"
+				"fileSystem": "output"
 			},
 			"compressionCodec": "snappy"
 		},

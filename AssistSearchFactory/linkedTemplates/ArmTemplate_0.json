@@ -168,13 +168,22 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "Table1",
 						"container": "scrapeddata"
-					},
-					"compression": {
-						"type": "snappy",
-						"level": "Optimal"
 					}
 				},
-				"schema": {}
+				"schema": {
+					"type": "object",
+					"properties": {
+						"Column1": {
+							"type": "string"
+						},
+						"Column2": {
+							"type": "string"
+						},
+						"Column3": {
+							"type": "string"
+						}
+					}
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/InitialScrapeStorage')]"

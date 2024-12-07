@@ -12,6 +12,10 @@
 				"type": "AzureBlobStorageLocation",
 				"fileName": "Table1",
 				"container": "scrapeddata"
+			},
+			"compression": {
+				"type": "snappy",
+				"level": "Optimal"
 			}
 		},
 		"schema": {}

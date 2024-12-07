@@ -28,13 +28,13 @@
 						"type": "WebSource"
 					},
 					"sink": {
-						"type": "JsonSink",
+						"type": "ParquetSink",
 						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
 						},
 						"formatSettings": {
-							"type": "JsonWriteSettings",
-							"filePattern": "setOfObjects"
+							"type": "ParquetWriteSettings"
 						}
 					},
 					"enableStaging": false,
@@ -69,7 +69,12 @@
 									"path": "$['Column3']"
 								}
 							}
-						]
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
 					}
 				},
 				"inputs": [
@@ -80,7 +85,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DestinationDataset_kht",
+						"referenceName": "Parquet1",
 						"type": "DatasetReference"
 					}
 				]

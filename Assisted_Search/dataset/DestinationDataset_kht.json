@@ -1,0 +1,19 @@
+{
+	"name": "DestinationDataset_kht",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "InitialScrapeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Table1",
+				"container": "scrapeddata"
+			}
+		},
+		"schema": {}
+	}
+}

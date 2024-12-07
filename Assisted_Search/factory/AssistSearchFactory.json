@@ -1,0 +1,9 @@
+{
+	"name": "AssistSearchFactory",
+	"location": "uksouth",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "c9331b00-5315-4aaf-a244-616461806418",
+		"tenantId": "abd548c5-e4b7-4f1b-bf8d-85f1121de82b"
+	}
+}

@@ -147,13 +147,13 @@
 								"type": "WebSource"
 							},
 							"sink": {
-								"type": "JsonSink",
+								"type": "ParquetSink",
 								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
 								},
 								"formatSettings": {
-									"type": "JsonWriteSettings",
-									"filePattern": "setOfObjects"
+									"type": "ParquetWriteSettings"
 								}
 							},
 							"enableStaging": false,
@@ -188,7 +188,12 @@
 											"path": "$['Column3']"
 										}
 									}
-								]
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
 							}
 						},
 						"inputs": [
@@ -200,7 +205,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "DestinationDataset_kht",
+								"referenceName": "Parquet1",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -214,7 +219,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/SourceDataset_kht')]",
-				"[concat(variables('factoryId'), '/datasets/DestinationDataset_kht')]"
+				"[concat(variables('factoryId'), '/datasets/Parquet1')]"
 			]
 		},
 		{
@@ -233,6 +238,10 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "Table1",
 						"container": "scrapeddata"
+					},
+					"compression": {
+						"type": "snappy",
+						"level": "Optimal"
 					}
 				},
 				"schema": {}
@@ -495,6 +504,7 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
 						"     mapColumn(",
 						"          Document_ID = {Document ID},",
 						"          Document_Title = {Document Title},",

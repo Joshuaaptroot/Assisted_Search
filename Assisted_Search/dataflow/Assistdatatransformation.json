@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "Scrapeddata",
+						"referenceName": "DestinationDataset_kht",
 						"type": "DatasetReference"
 					},
 					"name": "Scrapeddata"
@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "Parquet1",
+						"referenceName": "AssistedParquet",
 						"type": "DatasetReference"
 					},
 					"name": "assistsink",
@@ -27,39 +27,26 @@
 			],
 			"transformations": [
 				{
-					"name": "FilterEmptyRows"
-				},
-				{
-					"name": "DuplicateCounter"
-				},
-				{
-					"name": "Deduplication"
+					"name": "Removeemptycolumn"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          {Document ID} as string,",
-				"          {Document Title} as string,",
-				"          {Content Summary} as string,",
-				"          Category as string,",
-				"          URL as string",
+				"          Column1 as string,",
+				"          Column2 as string,",
+				"          Column3 as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> Scrapeddata",
-				"Scrapeddata filter(!isNull({Document ID}) && {Document ID} != '' &&",
-				"!isNull({Document Title}) && {Document Title} != '' &&",
-				"!isNull({Content Summary}) && {Content Summary} != '' &&",
-				"!isNull({Category}) && {Category} != '' &&",
-				"!isNull({URL}) && {URL} != '') ~> FilterEmptyRows",
-				"FilterEmptyRows aggregate(groupBy({Document ID},",
-				"          {Document Title},",
-				"          {Content Summary},",
-				"          Category,",
-				"          URL),",
-				"     RowCount = count({Document ID})) ~> DuplicateCounter",
-				"DuplicateCounter filter(RowCount > 1) ~> Deduplication",
-				"Deduplication sink(allowSchemaDrift: true,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> Scrapeddata",
+				"Scrapeddata select(mapColumn(",
+				"          Column2,",
+				"          Column3",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Removeemptycolumn",
+				"Removeemptycolumn sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     umask: 0022,",

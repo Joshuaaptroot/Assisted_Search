@@ -287,6 +287,30 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Json1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "JSONAssist",
+						"fileSystem": "output"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage2')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SourceDataset_kht')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -316,7 +340,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "Scrapeddata",
+								"referenceName": "DestinationDataset_kht",
 								"type": "DatasetReference"
 							},
 							"name": "Scrapeddata"
@@ -325,7 +349,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "Parquet1",
+								"referenceName": "Json1",
 								"type": "DatasetReference"
 							},
 							"name": "assistsink",
@@ -337,41 +361,27 @@
 					],
 					"transformations": [
 						{
-							"name": "FilterEmptyRows"
-						},
-						{
-							"name": "DuplicateCounter"
-						},
-						{
-							"name": "Deduplication"
+							"name": "Removeemptycolumn"
 						}
 					],
 					"scriptLines": [
 						"source(output(",
-						"          {Document ID} as string,",
-						"          {Document Title} as string,",
-						"          {Content Summary} as string,",
-						"          Category as string,",
-						"          URL as string",
+						"          Column1 as string,",
+						"          Column2 as string,",
+						"          Column3 as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> Scrapeddata",
-						"Scrapeddata filter(!isNull({Document ID}) && {Document ID} != '' &&",
-						"!isNull({Document Title}) && {Document Title} != '' &&",
-						"!isNull({Content Summary}) && {Content Summary} != '' &&",
-						"!isNull({Category}) && {Category} != '' &&",
-						"!isNull({URL}) && {URL} != '') ~> FilterEmptyRows",
-						"FilterEmptyRows aggregate(groupBy({Document ID},",
-						"          {Document Title},",
-						"          {Content Summary},",
-						"          Category,",
-						"          URL),",
-						"     RowCount = count({Document ID})) ~> DuplicateCounter",
-						"DuplicateCounter filter(RowCount > 1) ~> Deduplication",
-						"Deduplication sink(allowSchemaDrift: true,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> Scrapeddata",
+						"Scrapeddata select(mapColumn(",
+						"          Column2,",
+						"          Column3",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Removeemptycolumn",
+						"Removeemptycolumn sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     format: 'parquet',",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
@@ -379,20 +389,17 @@
 						"     skipDuplicateMapOutputs: true,",
 						"     saveOrder: 1,",
 						"     mapColumn(",
-						"          Document_ID = {Document ID},",
-						"          Document_Title = {Document Title},",
-						"          Content_Summary = {Content Summary},",
-						"          Category,",
-						"          URL,",
-						"          RowCount",
+						"          columns2 = Column2,",
+						"          Column3",
 						"     ),",
-						"     partitionBy('roundRobin', 2)) ~> assistsink"
+						"     partitionBy('roundRobin', 2),",
+						"     format: 'parquet') ~> assistsink"
 					]
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Scrapeddata')]",
-				"[concat(variables('factoryId'), '/datasets/Parquet1')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_kht')]",
+				"[concat(variables('factoryId'), '/datasets/Json1')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
 			]
 		},

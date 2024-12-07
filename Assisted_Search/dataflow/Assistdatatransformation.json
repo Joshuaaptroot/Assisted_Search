@@ -67,6 +67,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
 				"     mapColumn(",
 				"          Document_ID = {Document ID},",
 				"          Document_Title = {Document Title},",

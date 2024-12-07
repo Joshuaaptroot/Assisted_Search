@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "AssistedParquet",
+						"referenceName": "Json1",
 						"type": "DatasetReference"
 					},
 					"name": "assistsink",
@@ -48,7 +48,6 @@
 				"     skipDuplicateMapOutputs: true) ~> Removeemptycolumn",
 				"Removeemptycolumn sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'parquet',",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
@@ -63,7 +62,8 @@
 				"          URL,",
 				"          RowCount",
 				"     ),",
-				"     partitionBy('roundRobin', 2)) ~> assistsink"
+				"     partitionBy('roundRobin', 2),",
+				"     format: 'parquet') ~> assistsink"
 			]
 		}
 	}

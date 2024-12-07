@@ -2,7 +2,7 @@
 	"name": "Scrapeddata",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "StandinSource",
+			"referenceName": "InitialScrapeStorage",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -10,12 +10,12 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "Dataset.csv",
-				"container": "assustedsearch"
+				"fileName": "Table1",
+				"container": "scrapeddata"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
+			"firstRowAsHeader": false,
 			"quoteChar": "\""
 		},
 		"schema": [

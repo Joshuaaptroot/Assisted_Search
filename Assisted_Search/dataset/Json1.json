@@ -10,10 +10,23 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "JSONAssist",
+				"fileName": "ParquetAssist",
 				"fileSystem": "output"
+			},
+			"compression": {
+				"type": "snappy"
 			}
 		},
-		"schema": {}
+		"schema": {
+			"type": "object",
+			"properties": {
+				"columns2": {
+					"type": "string"
+				},
+				"Column3": {
+					"type": "string"
+				}
+			}
+		}
 	}
 }

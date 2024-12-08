@@ -190,6 +190,43 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Json1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "ParquetAssist",
+						"fileSystem": "output"
+					},
+					"compression": {
+						"type": "snappy"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"columns2": {
+							"type": "string"
+						},
+						"Column3": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage2')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Parquet1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -287,30 +324,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Json1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage2",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "JSONAssist",
-						"fileSystem": "output"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage2')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/SourceDataset_kht')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -349,7 +362,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "Json1",
+								"referenceName": "AssistedParquet",
 								"type": "DatasetReference"
 							},
 							"name": "assistsink",
@@ -361,7 +374,16 @@
 					],
 					"transformations": [
 						{
-							"name": "Removeemptycolumn"
+							"name": "RemoveemptyColumns"
+						},
+						{
+							"name": "TrimWhitespace"
+						},
+						{
+							"name": "StandardizeKeys"
+						},
+						{
+							"name": "Removeemptyvalues"
 						}
 					],
 					"scriptLines": [
@@ -379,9 +401,15 @@
 						"          Column3",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> Removeemptycolumn",
-						"Removeemptycolumn sink(allowSchemaDrift: true,",
+						"     skipDuplicateMapOutputs: true) ~> RemoveemptyColumns",
+						"Removeemptyvalues derive(Column2 = trim(Column2),",
+						"          Column3 = trim(Column3)) ~> TrimWhitespace",
+						"TrimWhitespace derive(Column2 = lower(replace(replace(Column2, ' ', '_'), '-', '_')),",
+						"          Column3 = lower(replace(replace(Column3, ' ', '_'), '-', '_'))) ~> StandardizeKeys",
+						"RemoveemptyColumns filter(!isNull(Column2) && Column2 != '' && !isNull(Column3) && Column3 != '') ~> Removeemptyvalues",
+						"StandardizeKeys sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     format: 'parquet',",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
@@ -392,14 +420,13 @@
 						"          columns2 = Column2,",
 						"          Column3",
 						"     ),",
-						"     partitionBy('roundRobin', 2),",
-						"     format: 'parquet') ~> assistsink"
+						"     partitionBy('roundRobin', 2)) ~> assistsink"
 					]
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DestinationDataset_kht')]",
-				"[concat(variables('factoryId'), '/datasets/Json1')]",
+				"[concat(variables('factoryId'), '/datasets/AssistedParquet')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
 			]
 		},
@@ -410,7 +437,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Copy_kht",
+						"name": "Copy_data_from_web",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {

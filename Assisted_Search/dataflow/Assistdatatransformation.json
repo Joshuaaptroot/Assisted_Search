@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "Json1",
+						"referenceName": "AssistedParquet",
 						"type": "DatasetReference"
 					},
 					"name": "assistsink",
@@ -62,10 +62,7 @@
 				"RemoveemptyColumns filter(!isNull(Column2) && Column2 != '' && !isNull(Column3) && Column3 != '') ~> Removeemptyvalues",
 				"StandardizeKeys sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          columns2 as string,",
-				"          Column3 as string",
-				"     ),",
+				"     format: 'parquet',",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
@@ -76,8 +73,7 @@
 				"          columns2 = Column2,",
 				"          Column3",
 				"     ),",
-				"     partitionBy('roundRobin', 2),",
-				"     format: 'parquet') ~> assistsink"
+				"     partitionBy('roundRobin', 2)) ~> assistsink"
 			]
 		}
 	}

@@ -27,13 +27,16 @@
 			],
 			"transformations": [
 				{
-					"name": "RemoveemptyItems"
+					"name": "RemoveemptyColumns"
 				},
 				{
 					"name": "TrimWhitespace"
 				},
 				{
 					"name": "StandardizeKeys"
+				},
+				{
+					"name": "Removeemptyvalues"
 				}
 			],
 			"scriptLines": [
@@ -51,13 +54,18 @@
 				"          Column3",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> RemoveemptyItems",
-				"RemoveemptyItems derive(Column2 = trim(Column2),",
+				"     skipDuplicateMapOutputs: true) ~> RemoveemptyColumns",
+				"Removeemptyvalues derive(Column2 = trim(Column2),",
 				"          Column3 = trim(Column3)) ~> TrimWhitespace",
 				"TrimWhitespace derive(Column2 = lower(replace(replace(Column2, ' ', '_'), '-', '_')),",
 				"          Column3 = lower(replace(replace(Column3, ' ', '_'), '-', '_'))) ~> StandardizeKeys",
+				"RemoveemptyColumns filter(!isNull(Column2) && Column2 != '' && !isNull(Column3) && Column3 != '') ~> Removeemptyvalues",
 				"StandardizeKeys sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          columns2 as string,",
+				"          Column3 as string",
+				"     ),",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",

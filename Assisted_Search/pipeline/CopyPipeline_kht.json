@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy_kht",
+				"name": "Copy_data_from_web",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
